@@ -8,33 +8,31 @@ on:
 
 jobs:
   build:
-    name: Build for version ${{ matrix.version }}
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        version: [14, 16, 18]  # 3 variants → 3 separate jobs (Node.js versions)
+        node-version: [14, 16, 18]  # ✅ Three distinct variants
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.version }}
+          node-version: ${{ matrix.node-version }}
 
       - name: matrix-7863cb8
-        run: echo "Building project for Node.js version ${{ matrix.version }}"
+        run: echo "Building for Node.js version ${{ matrix.node-version }}"
 
       - name: Generate build artifact
         run: |
-          echo "Build artifact for Node.js version ${{ matrix.version }}" > build-${{ matrix.version }}.txt
-          echo "Generated on $(date)" >> build-${{ matrix.version }}.txt
-          echo "Matrix version: ${{ matrix.version }}" >> build-${{ matrix.version }}.txt
+          echo "Build artifact for Node.js version ${{ matrix.node-version }}" > output-${{ matrix.node-version }}.txt
+          echo "Generated on $(date)" >> output-${{ matrix.node-version }}.txt
+          echo "Matrix identifier: matrix-7863cb8" >> output-${{ matrix.node-version }}.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-7863cb8-v${{ matrix.version }}
-          path: build-${{ matrix.version }}.txt
+          name: build-7863cb8-v${{ matrix.node-version }}
+          path: output-${{ matrix.node-version }}.txt
