@@ -8,35 +8,33 @@ on:
 
 jobs:
   build:
-    name: Matrix Build Job
-    runs-on: ${{ matrix.os }}
+    name: Build for version ${{ matrix.version }}
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.9', '3.10', '3.11']
+        version: [14, 16, 18]  # 3 variants → 3 separate jobs (Node.js versions)
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          node-version: ${{ matrix.version }}
 
       - name: matrix-7863cb8
-        run: |
-          echo "Running build for OS=${{ matrix.os }} and Python=${{ matrix.python-version }}"
+        run: echo "Building project for Node.js version ${{ matrix.version }}"
 
       - name: Generate build artifact
         run: |
-          echo "Build output for OS=${{ matrix.os }} and Python=${{ matrix.python-version }}" > output-${{ matrix.os }}-${{ matrix.python-version }}.txt
-          echo "Timestamp: $(date)" >> output-${{ matrix.os }}-${{ matrix.python-version }}.txt
-          echo "Matrix combination built successfully!" >> output-${{ matrix.os }}-${{ matrix.python-version }}.txt
+          echo "Build artifact for Node.js version ${{ matrix.version }}" > build-${{ matrix.version }}.txt
+          echo "Generated on $(date)" >> build-${{ matrix.version }}.txt
+          echo "Matrix version: ${{ matrix.version }}" >> build-${{ matrix.version }}.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-7863cb8-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: output-${{ matrix.os }}-${{ matrix.python-version }}.txt
+          name: build-7863cb8-v${{ matrix.version }}
+          path: build-${{ matrix.version }}.txt
